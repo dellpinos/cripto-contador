@@ -32,10 +32,12 @@ const useSelectMonedas = (label, opciones) => {
             >
                 <option value="">-- Seleccione --</option>
                 {opciones.map( opcion => (
+
+                    
                     <option
                         key={opcion.id}
                         value={opcion.id}
-                    >{opcion.nombre}</option>
+                    >{opcion.name}</option>
                 ))}
             </Select>
         </>
