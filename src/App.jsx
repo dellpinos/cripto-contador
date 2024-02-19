@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import styled from '@emotion/styled';
 import Formulario from './components/Formulario';
+import Resultado from './components/Resultado';
+import Spinner from './components/Spinner';
 import imagenCripto from './img/imagen-criptos.png';
 
 const Imagen = styled.img`
@@ -19,6 +21,14 @@ const Contenedor = styled.div`
         grid-template-columns: repeat(2, 1fr);
         column-gap: 2rem;
     }
+`;
+
+const ContenedorSpinner = styled.div`
+    width: 100%;
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 `;
 
 const Heading = styled.h1`
@@ -46,10 +56,28 @@ const Heading = styled.h1`
 function App() {
 
     const [monedas, setMonedas] = useState({});
+    const [resultado, setResultado] = useState({});
+    const [cargando, setCargando] = useState(false);
 
     useEffect(() => {
-        if(Object.keys(monedas).length > 0) {
-            console.log(monedas);
+        if (Object.keys(monedas).length > 0) {
+
+            const cotizarCripto = async () => {
+                setCargando(true);
+                setResultado({});
+
+                const { moneda, cripto } = monedas;
+                const url = `https://min-api.cryptocompare.com/data/pricemultifull?fsyms=${cripto}&tsyms=${moneda}`;
+
+                const respuesta = await fetch(url);
+                const resultado = await respuesta.json();
+
+                setResultado(resultado.DISPLAY[cripto][moneda]);
+
+                setCargando(false);
+            }
+
+            cotizarCripto();
         }
     }, [monedas]);
 
@@ -62,10 +90,18 @@ function App() {
             />
             <div>
                 <Heading>Cotiza Criptomonedas</Heading>
-                
+
                 <Formulario
                     setMonedas={setMonedas}
                 />
+
+                <ContenedorSpinner>
+
+                    {cargando && <Spinner>Cargando</Spinner>}
+                {resultado.PRICE && <Resultado resultado={resultado} />}
+                </ContenedorSpinner>
+
+
 
 
 
